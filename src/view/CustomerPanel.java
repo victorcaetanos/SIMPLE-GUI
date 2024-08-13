@@ -57,17 +57,17 @@ public class CustomerPanel extends MyFrame {
             String email = fieldEmail.getText();
             if (customerController.updateCustomer(id, name, phoneNumber, email)) {
                 clearAllFields();
-                buttonUpdate.setEnabled(false);
-                buttonInsert.setEnabled(true);
-                buttonDone.setEnabled(false);
+                switchButtons(false);
             }
             setTableModel(customerController.getAllCustomers());
         });
 
         buttonDelete.addActionListener(e -> {
             String id = fieldID.getText();
-            customerController.deleteCustomer(id);
-            clearAllFields();
+            if (customerController.deleteCustomer(id)) {
+                clearAllFields();
+                switchButtons(false);
+            }
             setTableModel(customerController.getAllCustomers());
         });
 
@@ -83,10 +83,7 @@ public class CustomerPanel extends MyFrame {
                     }
 
                     if (!buttonDone.isEnabled()) {
-                        buttonInsert.setEnabled(false);
-                        buttonUpdate.setEnabled(true);
-                        buttonDelete.setEnabled(true);
-                        buttonDone.setEnabled(true);
+                        switchButtons(true);
                     }
                     fieldID.setText(customerId);
                     setFieldTexts(rs);
@@ -97,15 +94,19 @@ public class CustomerPanel extends MyFrame {
         buttonDone.addActionListener(e -> {
             clearAllFields();
             setTableModel(customerController.getAllCustomers());
-            buttonInsert.setEnabled(true);
-            buttonUpdate.setEnabled(false);
-            buttonDelete.setEnabled(false);
-            buttonDone.setEnabled(false);
+            switchButtons(false);
         });
 
         this.setContentPane(panelMain);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setVisible(true);
+    }
+
+    private void switchButtons(boolean b) {
+        buttonInsert.setEnabled(!b);
+        buttonUpdate.setEnabled(b);
+        buttonDelete.setEnabled(b);
+        buttonDone.setEnabled(b);
     }
 
     public void setTableModel(final ResultSet rs) {

@@ -86,7 +86,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
         String sql = "SELECT id, name, phoneNumber, email FROM customers";
 
-        try  {
+        try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);
             return ps.executeQuery();
         } catch (SQLException e) {
@@ -96,18 +96,12 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
-    public Customer mapResultSetToCustomer(ResultSet rs) {
-        try {
-            if (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String phoneN = rs.getString("phoneNumber");
-                String email = rs.getString("email");
-                return new Customer(id, name, phoneN, email);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Customer mapResultSetToCustomer(ResultSet rs) throws SQLException {
+
+        int id = rs.getInt("id");
+        String name = rs.getString("name");
+        String phoneN = rs.getString("phoneNumber");
+        String email = rs.getString("email");
+        return new Customer(id, name, phoneN, email);
     }
 }

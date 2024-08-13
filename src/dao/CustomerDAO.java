@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public interface CustomerDAO {
 
@@ -14,5 +15,5 @@ public interface CustomerDAO {
 
     ResultSet listAllCustomers();
 
-     public Customer mapResultSetToCustomer(ResultSet rs);
+    public Customer mapResultSetToCustomer(ResultSet rs) throws SQLException;
 }

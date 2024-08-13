@@ -1,5 +1,7 @@
 package dao;
 
+import java.util.Objects;
+
 public class Customer {
     private int id;
     private String name;
@@ -11,6 +13,11 @@ public class Customer {
 
     public Customer(int id) {
         this.id = id;
+    }
+
+    public Customer(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Customer(String name, String phoneNumber, String email) {
@@ -56,5 +63,22 @@ public class Customer {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Customer other = (Customer) obj;
+        return this.getId() == other.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

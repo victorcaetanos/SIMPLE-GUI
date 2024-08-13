@@ -71,7 +71,7 @@
         </constraints>
         <properties>
           <font size="26" style="1"/>
-          <text value="Register Client"/>
+          <text value="Manage Customers"/>
         </properties>
       </component>
       <component id="23ad2" class="javax.swing.JTextField" binding="fieldID">
@@ -81,6 +81,8 @@
           </grid>
         </constraints>
         <properties>
+          <editable value="false"/>
+          <enabled value="true"/>
           <text value=""/>
           <toolTipText value=""/>
         </properties>
