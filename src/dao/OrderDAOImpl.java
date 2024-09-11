@@ -11,7 +11,7 @@ import static utils.DbConnection.getConnection;
 public class OrderDAOImpl implements OrderDAO {
 
     private PreparedStatement ps;
-    private final Connection con = getConnection();
+    private static final Connection con = getConnection();
 
     @Override
     public boolean insertOrder(int customerId) {
@@ -49,7 +49,7 @@ public class OrderDAOImpl implements OrderDAO {
     @Override
     public boolean deleteOrder(int orderId) {
 
-        String sql = "DELETE FROM orders WHERE id = ?";
+        String sql = "UPDATE orders SET is_deleted = true WHERE id = ?";
 
         try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);
@@ -81,7 +81,8 @@ public class OrderDAOImpl implements OrderDAO {
     public ResultSet listAllOrders() {
 
         String sql = "SELECT orders.id as id, customer_id, customers.name as name, totalPrice FROM orders " +
-                "join customers on (orders.customer_id = customers.id)";
+                "join customers on (orders.customer_id = customers.id) " +
+                "WHERE orders.is_deleted = false";
 
         try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);

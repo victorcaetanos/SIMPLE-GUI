@@ -19,19 +19,16 @@ public class OrderController {
         orderDAO = new OrderDAOImpl();
     }
 
-    public boolean addOrder(final String customerId) {
+    public boolean addOrder(final int customerId) {
 
-        Integer parsedId = ParseUtils.parseId(customerId, panel);
-        if (parsedId == null) return false;
-
-        String validationResult = ValidationUtils.validateId(parsedId);
+        String validationResult = ValidationUtils.validateId(customerId);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
         }
 
 
-        if (!orderDAO.insertOrder(parsedId)) {
+        if (!orderDAO.insertOrder(customerId)) {
             panel.showErrorMessage("Inserting Order failed!");
             return false;
         }
@@ -39,45 +36,40 @@ public class OrderController {
     }
 
 
-    public boolean updateOrder(final String orderId, String customerId) {
+    public boolean updateOrder(final String orderId, int customerId) {
 
         Integer parsedOrderID = ParseUtils.parseId(orderId, panel);
         if (parsedOrderID == null) return false;
-        Integer parsedCustomerID = ParseUtils.parseId(customerId, panel);
-        if (parsedCustomerID == null) return false;
-
         String validationResult = ValidationUtils.validateId(parsedOrderID);
-        if (!validationResult.isEmpty()) {
-            panel.showErrorMessage(validationResult);
-            return false;
-        } validationResult = ValidationUtils.validateId(parsedCustomerID);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
         }
 
 
-        if (!orderDAO.updateOrder(parsedOrderID, parsedCustomerID)) {
+        if (!orderDAO.updateOrder(parsedOrderID, customerId)) {
             panel.showErrorMessage("Updating Order failed!");
             return false;
         }
         return true;
     }
 
-    public void deleteOrder(final String orderId) {
+    public boolean deleteOrder(final String orderId) {
 
         Integer parsedOrderId = ParseUtils.parseId(orderId, panel, false);
-        if (parsedOrderId == null) return;
+        if (parsedOrderId == null) return false;
 
         String validationResult = ValidationUtils.validateId(parsedOrderId);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
-            return;
+            return false;
         }
 
         if (!orderDAO.deleteOrder(parsedOrderId)) {
             panel.showErrorMessage("Deleting Order failed!");
+            return false;
         }
+        return true;
     }
 
     public ResultSet getOrder(String orderId) {
@@ -89,7 +81,7 @@ public class OrderController {
         return rs;
     }
 
-    public ResultSet getAllOrder() {
+    public ResultSet getAllOrders() {
         ResultSet rs = orderDAO.listAllOrders();
         if (rs == null) {
             panel.showErrorMessage("Listing all Orders failed!");

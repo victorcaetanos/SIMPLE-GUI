@@ -1,16 +1,17 @@
 package dao;
 
+import exceptions.InsufficientQuantityException;
+import exceptions.NegativeQuantityException;
+
 import java.sql.ResultSet;
 
 public interface OrderItemDAO {
 
-    boolean insertOrderItem(OrderItem orderItem);
+    boolean insertOrderItem(OrderItem orderItem) throws NegativeQuantityException, InsufficientQuantityException;
 
-    boolean updateOrderItem(OrderItem orderItem);
-
-    boolean deleteOrderItem(int orderId, int productId);
+    boolean deleteOrderItem(int orderId, int productId, int quantity) throws InsufficientQuantityException, NegativeQuantityException;
 
     ResultSet listOrderItem(int orderId, int productId);
 
-    ResultSet listAllOrderItems();
+    ResultSet listAllOrderItems(int orderId);
 }

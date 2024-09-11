@@ -1,7 +1,8 @@
 package controller;
 
-import dao.Customer;
-import dao.CustomerDAOImpl;
+import dao.*;
+import exceptions.InsufficientQuantityException;
+import exceptions.NegativeQuantityException;
 import utils.ParseUtils;
 import utils.ValidationUtils;
 import view.MyFrame;
@@ -9,91 +10,75 @@ import view.MyFrame;
 import java.sql.ResultSet;
 
 public class OrderItemController {
-    private final CustomerDAOImpl customerDAO;
+    private final OrderItemDAOImpl orderItemDAO;
     private final MyFrame panel;
 
     public OrderItemController(MyFrame panel) {
         this.panel = panel;
-        customerDAO = new CustomerDAOImpl();
+        orderItemDAO = new OrderItemDAOImpl();
     }
 
-    public boolean addCustomer(String name, String phoneNumber, String email) {
+    public boolean addOrderItem(String orderId, Integer productId, String quantity, Float unitPrice) {
 
-        String parsedPhoneN = ParseUtils.parsePhoneNumber(phoneNumber, panel);
-        if (parsedPhoneN == null) return false;
+        Integer parsedOrderId = ParseUtils.parseId(orderId, panel);
+        if (parsedOrderId == null) return false;
+        Integer parsedQuantity = ParseUtils.parseQuantity(quantity, panel);
+        if (parsedQuantity == null) return false;
 
-        String validationResult = ValidationUtils.validateName(name);
+        String validationResult = ValidationUtils.validateId(parsedOrderId);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
         }
-        validationResult = ValidationUtils.validatePhoneNumber(parsedPhoneN);
+        validationResult = ValidationUtils.validateId(productId);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
         }
-        validationResult = ValidationUtils.validateEmail(email);
+        validationResult = ValidationUtils.validateQuantity(parsedQuantity);
+        if (!validationResult.isEmpty()) {
+            panel.showErrorMessage(validationResult);
+            return false;
+        }
+        validationResult = ValidationUtils.validatePrice(unitPrice);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
         }
 
-
-        Customer customer = new Customer(name, parsedPhoneN, email);
-        if (!customerDAO.insertCustomer(customer)) {
-            panel.showErrorMessage("Inserting customer failed!");
-            return false;
+        OrderItem orderItem = new OrderItem(parsedOrderId, productId, parsedQuantity, unitPrice);
+        try {
+            if (!orderItemDAO.insertOrderItem(orderItem)) {
+                panel.showErrorMessage("Inserting Order Item failed!");
+                return false;
+            }
+        } catch (InsufficientQuantityException | NegativeQuantityException e) {
+            panel.showErrorMessage(e.getMessage());
         }
         return true;
     }
 
+    public boolean deleteOrderItem(String orderId, int productId, String quantity) {
 
-    public boolean updateCustomer(final String idText, String name, String phoneNumber, String email) {
+        Integer parsedOrderId = ParseUtils.parseId(orderId, panel);
+        if (parsedOrderId == null) return false;
+        Integer parsedQuantity = ParseUtils.parseQuantity(quantity, panel);
+        if (parsedQuantity == null) return false;
 
-        Integer parsedID = ParseUtils.parseId(idText, panel);
-        if (parsedID == null) return false;
-        String parsedPhoneN = ParseUtils.parsePhoneNumber(phoneNumber, panel);
-        if (parsedPhoneN == null) return false;
-
-        String validationResult = ValidationUtils.validateId(parsedID);
+        String validationResult = ValidationUtils.validateId(parsedOrderId);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
         }
-        validationResult = ValidationUtils.validateName(name);
+        validationResult = ValidationUtils.validateId(productId);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
         }
-        validationResult = ValidationUtils.validatePhoneNumber(parsedPhoneN);
+        validationResult = ValidationUtils.validateQuantity(parsedQuantity);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
-        }
-        validationResult = ValidationUtils.validateEmail(email);
-        if (!validationResult.isEmpty()) {
-            panel.showErrorMessage(validationResult);
-            return false;
-        }
-
-
-        Customer customer = new Customer(parsedID, name, parsedPhoneN, email);
-        if (!customerDAO.updateCustomer(customer)) {
-            panel.showErrorMessage("Updating customer failed!");
-            return false;
-        }
-        return true;
-    }
-
-    public void deleteCustomer(final String custormerId) {
-
-        Integer custormerID = ParseUtils.parseId(custormerId, panel, false);
-        if (custormerID == null) return;
-
-        String validationResult = ValidationUtils.validateId(custormerID);
-        if (!validationResult.isEmpty()) {
-            panel.showErrorMessage(validationResult);
-            return;
         }
 
         // TODO: check if Customer is in a order before deleting
@@ -102,26 +87,57 @@ public class OrderItemController {
         //  }
         //  instantiate a orderItemDAOImp on constructor
 
-        if (!customerDAO.deleteCustomer(custormerID)) {
-            panel.showErrorMessage("Deleting customer failed!");
+        // TODO: do the thing to update or delete
+
+        try {
+            if (!orderItemDAO.deleteOrderItem(parsedOrderId, productId, parsedQuantity)) {
+                panel.showErrorMessage("Deleting Order Item failed!");
+                return false;
+            }
+        } catch (InsufficientQuantityException | NegativeQuantityException e) {
+            panel.showErrorMessage(e.getMessage());
         }
+        return true;
     }
 
-    public ResultSet getCustomer(String customerId) {
-        Integer id = ParseUtils.parseId(customerId, panel);
-        ResultSet rs = customerDAO.listCustomer(id);
+    public ResultSet getOrderItem(String orderId, int productId) {
+        Integer parsedId = ParseUtils.parseId(orderId, panel);
+        ResultSet rs = orderItemDAO.listOrderItem(parsedId, productId);
         if (rs == null) {
             panel.showErrorMessage("Listing customer failed!");
         }
         return rs;
     }
 
-    public ResultSet getAllCustomers() {
-        ResultSet rs = customerDAO.listAllCustomers();
+    public ResultSet getAllOrderItems(String orderId) {
+        Integer parsedOrderId = ParseUtils.parseId(orderId, panel);
+        if (parsedOrderId == null) return null;
+
+        ResultSet rs = orderItemDAO.listAllOrderItems(parsedOrderId);
         if (rs == null) {
-            panel.showErrorMessage("Listing all customers failed!");
+            panel.showErrorMessage("Listing all order items failed!");
         }
         return rs;
+    }
+
+    public String calculateTotal(String quant, String unit) {
+
+        Integer parsedQuantity = ParseUtils.parseQuantity(quant, panel, false);
+        if (parsedQuantity == null) return "0";
+        Float parsedPrice = ParseUtils.parsePrice(unit, panel, false);
+        if (parsedPrice == null) return "0";
+
+//        String validationResult = ValidationUtils.validateQuantity(parsedQuantity);
+//        if (!validationResult.isEmpty()) {
+//            panel.showErrorMessage(validationResult);
+//            return "";
+//        }
+//        validationResult = ValidationUtils.validatePrice(parsedPrice);
+//        if (!validationResult.isEmpty()) {
+//            panel.showErrorMessage(validationResult);
+//            return "";
+//        }
+        return "" + (parsedQuantity * parsedPrice);
     }
 }
 
