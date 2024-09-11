@@ -11,7 +11,7 @@ import static utils.DbConnection.getConnection;
 public class CustomerDAOImpl implements CustomerDAO {
 
     private PreparedStatement ps;
-    private final Connection con = getConnection();
+    private static final Connection con = getConnection();
 
     @Override
     public boolean insertCustomer(Customer customer) {
@@ -53,7 +53,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     @Override
     public boolean deleteCustomer(int customerId) {
 
-        String sql = "DELETE FROM customers WHERE id = ?";
+        String sql = "UPDATE customers SET is_deleted = true WHERE id = ?";
 
         try (Connection con = getConnection();
              PreparedStatement ps = Objects.requireNonNull(con).prepareStatement(sql)) {
@@ -69,7 +69,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     @Override
     public ResultSet listCustomer(int customerId) {
 
-        String sql = "SELECT id, name, phoneNumber, email FROM customers WHERE id = ?";
+        String sql = "SELECT id, name, phoneNumber, email FROM customers WHERE id = ? AND is_deleted = false";
 
         try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);
@@ -84,7 +84,7 @@ public class CustomerDAOImpl implements CustomerDAO {
     @Override
     public ResultSet listAllCustomers() {
 
-        String sql = "SELECT id, name, phoneNumber, email FROM customers";
+        String sql = "SELECT id, name, phoneNumber, email FROM customers WHERE is_deleted = false";
 
         try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);
@@ -97,11 +97,13 @@ public class CustomerDAOImpl implements CustomerDAO {
 
     @Override
     public Customer mapResultSetToCustomer(ResultSet rs) throws SQLException {
-
-        int id = rs.getInt("id");
-        String name = rs.getString("name");
-        String phoneN = rs.getString("phoneNumber");
-        String email = rs.getString("email");
-        return new Customer(id, name, phoneN, email);
+        if (rs.next()) {
+            int id = rs.getInt("id");
+            String name = rs.getString("name");
+            String phoneN = rs.getString("phoneNumber");
+            String email = rs.getString("email");
+            return new Customer(id, name, phoneN, email);
+        }
+        return null;
     }
 }

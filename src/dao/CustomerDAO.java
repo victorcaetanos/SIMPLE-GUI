@@ -15,5 +15,5 @@ public interface CustomerDAO {
 
     ResultSet listAllCustomers();
 
-    public Customer mapResultSetToCustomer(ResultSet rs) throws SQLException;
+    Customer mapResultSetToCustomer(ResultSet rs) throws SQLException;
 }

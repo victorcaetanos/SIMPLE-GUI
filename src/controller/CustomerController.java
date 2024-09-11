@@ -7,6 +7,8 @@ import utils.ValidationUtils;
 import view.MyFrame;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
 
 public class CustomerController {
     private final CustomerDAOImpl customerDAO;
@@ -85,15 +87,15 @@ public class CustomerController {
         return true;
     }
 
-    public void deleteCustomer(final String custormerId) {
+    public boolean deleteCustomer(final String custormerId) {
 
         Integer custormerID = ParseUtils.parseId(custormerId, panel, false);
-        if (custormerID == null) return;
+        if (custormerID == null) return false;
 
         String validationResult = ValidationUtils.validateId(custormerID);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
-            return;
+            return false;
         }
 
         // TODO: check if Customer is in a order before deleting
@@ -102,9 +104,13 @@ public class CustomerController {
         //  }
         //  instantiate a orderItemDAOImp on constructor
 
+        // TODO: change delete to update the field is_deleted
+
         if (!customerDAO.deleteCustomer(custormerID)) {
             panel.showErrorMessage("Deleting Customer failed!");
+            return false;
         }
+        return true;
     }
 
     public ResultSet getCustomer(String customerId) {
@@ -122,6 +128,20 @@ public class CustomerController {
             panel.showErrorMessage("Listing all Customers failed!");
         }
         return rs;
+    }
+
+    public Vector<Customer> getAllCustomersVector() {
+        Vector<Customer> customers = new Vector<>();
+        ResultSet rs = customerDAO.listAllCustomers();
+        while (true) {
+            try {
+                if (!rs.next()) break;
+                customers.add(new Customer(rs.getInt("id"), rs.getString("name")));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return customers;
     }
 }
 

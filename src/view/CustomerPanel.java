@@ -63,6 +63,16 @@ public class CustomerPanel extends MyFrame {
         });
 
         buttonDelete.addActionListener(e -> {
+            int deleteConfirmation = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete this item?",
+                    "Delete Confirmation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (deleteConfirmation == JOptionPane.NO_OPTION) {
+                return;
+            }
+
             String id = fieldID.getText();
             if (customerController.deleteCustomer(id)) {
                 clearAllFields();
