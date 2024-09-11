@@ -46,6 +46,13 @@ public class ValidationUtils {
         return "";
     }
 
+    public static String validateQuantity(final Integer quantity, final int MIN) {
+        if (quantity == null || quantity < MIN) {
+            return String.format("Please enter a quantity that's %s or higher!", MIN);
+        }
+        return "";
+    }
+
     public static String validatePrice(final Float price) {
         final Float MIN = 0.0f;
         if (price == null || price <= MIN) {
