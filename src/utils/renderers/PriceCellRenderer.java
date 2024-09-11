@@ -2,13 +2,10 @@ package utils.renderers;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class PriceCellRenderer extends DefaultTableCellRenderer {
-    private NumberFormatter priceFormatter;
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

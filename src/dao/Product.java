@@ -73,6 +73,7 @@ public class Product {
     public void setIs_deleted(int is_deleted) {
         this.is_deleted = is_deleted;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

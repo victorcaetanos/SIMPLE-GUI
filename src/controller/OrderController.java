@@ -1,8 +1,5 @@
 package controller;
 
-import dao.Customer;
-import dao.CustomerDAOImpl;
-import dao.Order;
 import dao.OrderDAOImpl;
 import utils.ParseUtils;
 import utils.ValidationUtils;
