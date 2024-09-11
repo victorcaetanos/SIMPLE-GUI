@@ -1,19 +1,20 @@
 package dao;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 
 public interface ProductDAO {
 
-    public boolean insertProduct(Product product);
+    boolean insertProduct(Product product);
 
-    public boolean updateProduct(Product product);
+    boolean updateProduct(Product product);
 
-    public boolean deleteProduct(int productId);
+    boolean deleteProduct(int productId);
 
-    public ResultSet listProduct(int productId);
+    ResultSet listProduct(int productId);
 
-    public ResultSet listAllProduct();
+    ResultSet listAllProduct();
 
-     public Product mapResultSetToProduct (ResultSet rs);
+    Product mapResultSetToProduct(ResultSet rs) throws SQLException;
 }

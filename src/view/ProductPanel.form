@@ -81,6 +81,8 @@
           </grid>
         </constraints>
         <properties>
+          <editable value="false"/>
+          <enabled value="true"/>
           <text value=""/>
           <toolTipText value=""/>
         </properties>

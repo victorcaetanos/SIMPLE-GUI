@@ -1,10 +1,13 @@
 package dao;
 
+import java.util.Objects;
+
 public class Product {
     private int id;
     private String name;
     private float price;
     private int quantity;
+    private int is_deleted;
 
     public Product() {
     }
@@ -13,7 +16,12 @@ public class Product {
         this.id = id;
     }
 
-    public Product(String name, float price,int quantity) {
+    public Product(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Product(String name, float price, int quantity) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
@@ -56,5 +64,29 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getIs_deleted() {
+        return is_deleted;
+    }
+
+    public void setIs_deleted(int is_deleted) {
+        this.is_deleted = is_deleted;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Product other = (Product) obj;
+        return this.getId() == other.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }

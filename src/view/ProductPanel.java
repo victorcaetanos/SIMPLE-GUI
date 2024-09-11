@@ -59,18 +59,27 @@ public class ProductPanel extends MyFrame {
             String email = fieldQuantity.getText();
             if (productController.updateProduct(id, name, phoneNumber, email)) {
                 clearAllFields();
-                buttonInsert.setEnabled(true);
-                buttonUpdate.setEnabled(false);
-                buttonDelete.setEnabled(false);
-                buttonDone.setEnabled(false);
+                switchButtons(false);
             }
             setTableModel(productController.getAllProducts());
         });
 
         buttonDelete.addActionListener(e -> {
+            int deleteConfirmation = JOptionPane.showConfirmDialog(this,
+                    "Are you sure you want to delete this item?",
+                    "Delete Confirmation",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (deleteConfirmation == JOptionPane.NO_OPTION) {
+                return;
+            }
+
             String id = fieldID.getText();
-            productController.deleteProduct(id);
-            clearAllFields();
+            if (productController.deleteProduct(id)) {
+                clearAllFields();
+                switchButtons(false);
+            }
             setTableModel(productController.getAllProducts());
         });
 
@@ -86,10 +95,7 @@ public class ProductPanel extends MyFrame {
                     }
 
                     if (!buttonDone.isEnabled()) {
-                        buttonInsert.setEnabled(false);
-                        buttonUpdate.setEnabled(true);
-                        buttonDelete.setEnabled(true);
-                        buttonDone.setEnabled(true);
+                        switchButtons(true);
                     }
                     fieldID.setText(productId);
                     setFieldTexts(rs);
@@ -100,15 +106,19 @@ public class ProductPanel extends MyFrame {
         buttonDone.addActionListener(e -> {
             clearAllFields();
             setTableModel(productController.getAllProducts());
-            buttonInsert.setEnabled(true);
-            buttonUpdate.setEnabled(false);
-            buttonDelete.setEnabled(false);
-            buttonDone.setEnabled(false);
+            switchButtons(false);
         });
 
         this.setContentPane(panelMain);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setVisible(true);
+    }
+
+    public void switchButtons(boolean b) {
+        buttonInsert.setEnabled(!b);
+        buttonUpdate.setEnabled(b);
+        buttonDelete.setEnabled(b);
+        buttonDone.setEnabled(b);
     }
 
     public void setTableModel(final ResultSet rs) {
@@ -140,8 +150,8 @@ public class ProductPanel extends MyFrame {
 
     public void clearAllFields() {
         fieldName.setText("");
-        fieldPrice.setText("");
-        fieldQuantity.setText("");
+        fieldPrice.setText("0");
+        fieldQuantity.setText("0");
         fieldID.setText("");
     }
 

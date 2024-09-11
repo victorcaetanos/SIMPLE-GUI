@@ -8,6 +8,8 @@ import utils.ValidationUtils;
 import view.MyFrame;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
 
 public class ProductController {
     private final MyFrame panel;
@@ -36,7 +38,7 @@ public class ProductController {
             panel.showErrorMessage(validationResult);
             return false;
         }
-        validationResult = ValidationUtils.validateQuantity(parsedQuantity);
+        validationResult = ValidationUtils.validateQuantity(parsedQuantity, 0);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
@@ -76,7 +78,7 @@ public class ProductController {
             panel.showErrorMessage(validationResult);
             return false;
         }
-        validationResult = ValidationUtils.validateQuantity(parsedQuantity);
+        validationResult = ValidationUtils.validateQuantity(parsedQuantity, 0);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
             return false;
@@ -91,15 +93,15 @@ public class ProductController {
         return true;
     }
 
-    public void deleteProduct(final String productId) {
+    public boolean deleteProduct(final String productId) {
 
         Integer productID = ParseUtils.parseId(productId, panel, false);
-        if (productID == null) return;
+        if (productID == null) return false;
 
         String validationResult = ValidationUtils.validateId(productID);
         if (!validationResult.isEmpty()) {
             panel.showErrorMessage(validationResult);
-            return;
+            return false;
         }
 
         // TODO: check if Product is in a order item before deleting
@@ -108,9 +110,13 @@ public class ProductController {
         //  }
         //  instantiate a orderItemDAOImp on constructor
 
+        // TODO: change delete to update the field is_deleted
+
         if (!productDAO.deleteProduct(productID)) {
             panel.showErrorMessage("Deleting Product failed!");
+            return false;
         }
+        return true;
     }
 
     public ResultSet getProduct(String productId) {
@@ -128,6 +134,20 @@ public class ProductController {
             panel.showErrorMessage("Listing all Products failed!");
         }
         return rs;
+    }
+
+    public Vector<Product> getAllProductsVector() {
+        Vector<Product> products = new Vector<>();
+        ResultSet rs = productDAO.listAllProduct();
+        while (true) {
+            try {
+                if (!rs.next()) break;
+                products.add(new Product(rs.getInt("id"), rs.getString("name"), rs.getFloat("price"), rs.getInt("quantity")));
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return products;
     }
 }
 

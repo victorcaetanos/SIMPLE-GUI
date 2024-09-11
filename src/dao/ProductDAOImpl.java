@@ -11,7 +11,7 @@ import static utils.DbConnection.getConnection;
 public class ProductDAOImpl implements ProductDAO {
 
     private PreparedStatement ps;
-    private final Connection con = getConnection();
+    private static final Connection con = getConnection();
 
     @Override
     public boolean insertProduct(Product product) {
@@ -53,7 +53,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public boolean deleteProduct(int productId) {
 
-        String sql = "DELETE FROM products WHERE id = ?";
+        String sql = "UPDATE products SET is_deleted = true WHERE id = ?";
 
         try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);
@@ -69,7 +69,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public ResultSet listProduct(int productId) {
 
-        String sql = "SELECT id, name, price, quantity FROM products WHERE id = ?";
+        String sql = "SELECT id, name, price, quantity FROM products WHERE id = ? AND is_deleted = false";
 
         try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);
@@ -84,7 +84,7 @@ public class ProductDAOImpl implements ProductDAO {
     @Override
     public ResultSet listAllProduct() {
 
-        String sql = "SELECT id, name, price, quantity FROM products";
+        String sql = "SELECT id, name, price, quantity FROM products WHERE is_deleted = false";
 
         try {
             ps = Objects.requireNonNull(con).prepareStatement(sql);
@@ -96,18 +96,13 @@ public class ProductDAOImpl implements ProductDAO {
     }
 
     @Override
-    public Product mapResultSetToProduct(ResultSet rs) {
-
-        try {
-            if (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                float price = rs.getFloat("price");
-                int quantity = rs.getInt("quantity");
-                return new Product(id, name, price, quantity);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public Product mapResultSetToProduct(ResultSet rs) throws SQLException {
+        if (rs.next()) {
+            int id = rs.getInt("id");
+            String name = rs.getString("name");
+            float price = rs.getFloat("price");
+            int quantity = rs.getInt("quantity");
+            return new Product(id, name, price, quantity);
         }
         return null;
     }
