@@ -58,14 +58,12 @@ public class MyFrame extends JFrame {
         }
 
         // A little extra code for non-editable cells
-        DefaultTableModel tableModel = new DefaultTableModel(dataVector, columnNames) {
+        return new DefaultTableModel(dataVector, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-
-        return tableModel;
     }
 
     public void showErrorMessage(String message) {
