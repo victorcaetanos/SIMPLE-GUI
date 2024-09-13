@@ -240,6 +240,7 @@ public class OrderPanel extends MyFrame {
 
         buttonDone.addActionListener(e -> {
             doneAction();
+            comboBoxCustomer.setEnabled(true);
             setTableOrderItemModel(orderItemController.getAllOrderItems(EMPTY));
         });
 

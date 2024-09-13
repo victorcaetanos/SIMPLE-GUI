@@ -7,7 +7,7 @@ public class Customer {
     private String name;
     private String phoneNumber;
     private String email;
-    private boolean is_deleted;
+    private boolean deleted;
 
     public Customer() {
     }
@@ -66,12 +66,12 @@ public class Customer {
         this.email = email;
     }
 
-    public boolean isIs_deleted() {
-        return is_deleted;
+    public boolean isDeleted() {
+        return deleted;
     }
 
-    public void setIs_deleted(boolean is_deleted) {
-        this.is_deleted = is_deleted;
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override

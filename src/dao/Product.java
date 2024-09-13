@@ -7,7 +7,7 @@ public class Product {
     private String name;
     private float price;
     private int quantity;
-    private int is_deleted;
+    private boolean deleted;
 
     public Product() {
     }
@@ -66,12 +66,12 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public int getIs_deleted() {
-        return is_deleted;
+    public boolean isDeleted() {
+        return deleted;
     }
 
-    public void setIs_deleted(int is_deleted) {
-        this.is_deleted = is_deleted;
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override

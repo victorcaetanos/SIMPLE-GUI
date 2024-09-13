@@ -4,6 +4,7 @@ public class Order {
     private int id;
     private int customerId;
     private float totalPrice;
+    private boolean deleted;
 
     public Order() {
     }
@@ -37,4 +38,13 @@ public class Order {
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
     }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
 }
